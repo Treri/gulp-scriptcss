@@ -1,23 +1,12 @@
 var fs = require('fs')
   , path = require('path')
 
-  , gutil = require('gulp-util')
   , through = require('through2')
-  , chalk = require('chalk')
-  , PluginError = gutil.PluginError
 
   , PLUGIN_NAME = 'gulp-scriptcss'
 
 module.exports = function(options){
   options = options || {};
-
-  if(!options.cssdir){
-    gutil.log(chalk.red(PLUGIN_NAME + ': cssdir is not set'));
-    // throw new PluginError(PLUGIN_NAME, 'cssdir is not set');
-    return through.obj(function(file, enc, done){
-      done(null, file);
-    });
-  }
 
   if('string' == typeof options.cssdir){
     options.cssdir = [options.cssdir];
@@ -42,7 +31,7 @@ module.exports = function(options){
       }else{
         cssFiles = options.specials[file.relative];
       }
-    }else{
+    }else if(options.cssdir){
       cssFiles = options.cssdir.map(function(cssdir){
         return path.join(cssdir, file.basename.replace(/\.js$/, '.css'));
       });

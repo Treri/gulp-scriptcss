@@ -1,6 +1,6 @@
 {
   "name": "gulp-scriptcss",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "use javascript to insert css to html head",
   "main": "index.js",
   "scripts": {
@@ -20,8 +20,6 @@
   },
   "homepage": "https://github.com/Treri/gulp-scriptcss#readme",
   "dependencies": {
-    "chalk": "^1.1.1",
-    "gulp-util": "^3.0.6",
     "through2": "^2.0.0"
   }
 }
