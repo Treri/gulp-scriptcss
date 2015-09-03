@@ -1,6 +1,6 @@
 {
   "name": "gulp-scriptcss",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "use javascript to insert css to html head",
   "main": "index.js",
   "scripts": {

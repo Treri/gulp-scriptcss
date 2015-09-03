@@ -3,9 +3,13 @@ var fs = require('fs')
 
   , through = require('through2')
 
-  , PLUGIN_NAME = 'gulp-scriptcss'
+function prefixStream(prefixText) {
+  var stream = through();
+  stream.write(prefixText);
+  return stream;
+}
 
-module.exports = function(options){
+function gulpScriptCSS(options){
   options = options || {};
 
   if('string' == typeof options.cssdir){
@@ -21,8 +25,13 @@ module.exports = function(options){
   var scriptCSSPrefix = 'window.__scriptCSS__&&window.__scriptCSS__("';
   var scriptCSSSuffix = '");\n';
   var scriptCSSGlobal = '"function"==typeof window.__scriptCSS__||(window.__scriptCSS__=function(e){var t=document.createElement("style");t.setAttribute("type","text/css"),t.styleSheet?t.styleSheet.cssText=e:t.appendChild(document.createTextNode(e)),document.getElementsByTagName("head")[0].appendChild(t)});\n';
+  var scriptCSSGlobalBuffer = new Buffer(scriptCSSGlobal);
 
   return through.obj(function(file, enc, done){
+
+    if(file.isNull()){
+      return done(null, file);
+    }
 
     var cssFiles = [];
     if(options.specials[file.relative]){
@@ -45,24 +54,34 @@ module.exports = function(options){
       }
     }
     if(cssContent){
-      file.contents = Buffer.concat([
-        new Buffer(cssContent),
-        file.contents
-      ]);
+      if(file.isBuffer()){
+        file.contents = Buffer.concat([
+          new Buffer(cssContent),
+          file.contents
+        ]);
+      }else if(file.isStream()){
+        file.contents = file.contents.pipe(prefixStream(new Buffer(cssContent)));
+      }
     }
 
     // add global scriptCSS function
     if(options.main){
       options.main.forEach(function(mainFile){
         if(mainFile == file.relative){
-          file.contents = Buffer.concat([
-            new Buffer(scriptCSSGlobal),
-            file.contents
-          ]);
+          if(file.isBuffer()){
+            file.contents = Buffer.concat([
+              scriptCSSGlobalBuffer,
+              file.contents
+            ]);
+          }else if(file.isStream()){
+            file.contents = file.contents.pipe(prefixStream(scriptCSSGlobalBuffer));
+          }
         }
       });
     }
 
-    done(null, file);
+    return done(null, file);
   });
 }
+
+module.exports = gulpScriptCSS;
