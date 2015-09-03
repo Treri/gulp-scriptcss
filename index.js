@@ -18,9 +18,9 @@ module.exports = function(options){
 
   options.specials = options.specials || {};
 
-  var addStylePrefix = 'window.addStyle&&addStyle("';
-  var addStyleSuffix = '");\n';
-  var addStyleGlobal = '"function"==typeof window.addStyle||(window.addStyle=function(e){var t=document.createElement("style");t.setAttribute("type","text/css"),t.styleSheet?t.styleSheet.cssText=e:t.appendChild(document.createTextNode(e)),document.getElementsByTagName("head")[0].appendChild(t)});\n';
+  var scriptCSSPrefix = 'window.__scriptCSS__&&window.__scriptCSS__("';
+  var scriptCSSSuffix = '");\n';
+  var scriptCSSGlobal = '"function"==typeof window.__scriptCSS__||(window.__scriptCSS__=function(e){var t=document.createElement("style");t.setAttribute("type","text/css"),t.styleSheet?t.styleSheet.cssText=e:t.appendChild(document.createTextNode(e)),document.getElementsByTagName("head")[0].appendChild(t)});\n';
 
   return through.obj(function(file, enc, done){
 
@@ -41,7 +41,7 @@ module.exports = function(options){
     while(cssFiles.length){
       cssFile = cssFiles.pop();
       if(fs.existsSync(cssFile)){
-        cssContent = addStylePrefix + fs.readFileSync(cssFile, 'utf8').replace(/\\/g, '\\\\').replace(/"/g, '\\"') + addStyleSuffix + cssContent;
+        cssContent = scriptCSSPrefix + fs.readFileSync(cssFile, 'utf8').replace(/\\/g, '\\\\').replace(/"/g, '\\"') + scriptCSSSuffix + cssContent;
       }
     }
     if(cssContent){
@@ -51,12 +51,12 @@ module.exports = function(options){
       ]);
     }
 
-    // add global addStyle function
+    // add global scriptCSS function
     if(options.main){
       options.main.forEach(function(mainFile){
         if(mainFile == file.relative){
           file.contents = Buffer.concat([
-            new Buffer(addStyleGlobal),
+            new Buffer(scriptCSSGlobal),
             file.contents
           ]);
         }
