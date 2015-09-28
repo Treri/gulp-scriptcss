@@ -2,6 +2,12 @@ var fs = require('fs')
   , path = require('path')
 
   , through = require('through2')
+  , uglify = require('uglify-js')
+
+  , scriptCSSPrefix = 'window.__scriptCSS__&&window.__scriptCSS__("'
+  , scriptCSSSuffix = '");\n'
+  , scriptCSSGlobal = uglify.minify(path.join(__dirname, 'scriptCSS.js')).code
+  , scriptCSSGlobalBuffer = new Buffer(scriptCSSGlobal + '\n')
 
 function prefixStream(prefixText) {
   var stream = through();
@@ -21,11 +27,6 @@ function gulpScriptCSS(options){
   }
 
   options.specials = options.specials || {};
-
-  var scriptCSSPrefix = 'window.__scriptCSS__&&window.__scriptCSS__("';
-  var scriptCSSSuffix = '");\n';
-  var scriptCSSGlobal = '"function"==typeof window.__scriptCSS__||(window.__scriptCSS__=function(e){var t=document.createElement("style");t.setAttribute("type","text/css"),t.styleSheet?t.styleSheet.cssText=e:t.appendChild(document.createTextNode(e)),document.getElementsByTagName("head")[0].appendChild(t)});\n';
-  var scriptCSSGlobalBuffer = new Buffer(scriptCSSGlobal);
 
   return through.obj(function(file, enc, done){
 
