@@ -3,7 +3,7 @@ use javascript to insert css to html head
 
 ### options
 - main, type: String or Array, which file do you want to add `window.__scriptCSS__` function.
-- cssdir, type: String or Array, cssdirs to find css files
+- cssdirs, type: String or Array, cssdirs to find css files
 - specials, type: Object, some files have special conditons
 
 ### example
@@ -23,7 +23,8 @@ gulp
         'css/main2.css'
       ]
     },
-    cssdir: 'css'
+    cssdirs: 'css'
+    // cssdirs: ['css1', 'css2']
   }))
   .pipe(gulp.dest('dist'));
 ```

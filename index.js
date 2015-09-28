@@ -18,8 +18,12 @@ function prefixStream(prefixText) {
 function gulpScriptCSS(options){
   options = options || {};
 
-  if('string' == typeof options.cssdir){
-    options.cssdir = [options.cssdir];
+  if(!options.cssdirs && options.cssdir){
+    options.cssdirs = options.cssdir;
+  }
+
+  if('string' == typeof options.cssdirs){
+    options.cssdirs = [options.cssdirs];
   }
 
   if('string' == typeof options.main){
@@ -41,8 +45,8 @@ function gulpScriptCSS(options){
       }else{
         cssFiles = options.specials[file.relative];
       }
-    }else if(options.cssdir){
-      cssFiles = options.cssdir.map(function(cssdir){
+    }else if(options.cssdirs){
+      cssFiles = options.cssdirs.map(function(cssdir){
         return path.join(cssdir, file.basename.replace(/\.js$/, '.css'));
       });
     }
